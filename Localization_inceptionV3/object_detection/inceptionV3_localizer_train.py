@@ -21,17 +21,48 @@ from keras import backend as K
 import numpy as np
 np.random.seed(2016)
 target = 139
+
 def l2_loss(y_true, y_pred):
 	return K.sqrt(K.sum(K.square(y_pred - y_true), axis = -1))    
+
 def load_from_file(filename):
 	import numpy as np
 	return np.load( filename + '.npy')
+
+def get_train_val():
+	coordinates = load_from_file('localization/localizer/train/coordinates_float_139')
+	resize_img = load_from_file('localization/localizer/train/resize_img_float_139')
+	Y = coordinates.reshape((-1,4))
+	X = resize_img.reshape((-1,target,target,3))
+	# 这里的数据，x是0-255之间的值，y是0-139之间的值。都是浮点数类型。
+	Y = Y/float(target)
+	X = X/float(255)
+	return X, Y
+
+def shuffle(data, labels):
+	rnd = np.random.get_state()
+	np.random.shuffle(data)
+	np.random.set_state(rnd)
+	np.random.shuffle(labels)
+	return data, labels
+
 def get_shuffled():	
 	coordinates = load_from_file('localization/localizer/train/shuffled_coordinates_float_139')
 	resize_img = load_from_file('localization/localizer/train/shuffled_resize_img_float_139')
 	Y = coordinates.reshape((-1,4))
 	X = resize_img.reshape((-1,target,target,3))
 	return X,Y
+
+def save_shuffle_data():
+	X, Y = get_train_val()
+	X, Y = shuffle(X, Y)
+	import helpers
+	helpers.save_to_file('localization/localizer/train/shuffled_coordinates_float_139',Y)
+	helpers.save_to_file('localization/localizer/train/shuffled_resize_img_float_139',X)
+	print 'saved already'
+
+# after the first time to run, just comment the following code 
+save_shuffle_data()
 
 X,Y = get_shuffled()
 # dimensions of our images.0
