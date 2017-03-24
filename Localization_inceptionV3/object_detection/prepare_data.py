@@ -14,7 +14,7 @@ def get_coor_image_train():
 	for fld in folders:
 		index = folders.index(fld)
 		json_name = jsons[index]
-		json_dir = '/Users/liumengyao/Documents/DataScience/fisher/kaggleNatureConservancy-master/'+json_name
+		json_dir = '../kaggleNatureConservancy-master/'+json_name
 		fish_labels = pd.read_json(json_dir)
 		print('process folder {} (Index: {})'.format(fld, index))
 		path = os.path.join('..','input','train', fld, '*.jpg')
