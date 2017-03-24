@@ -20,23 +20,22 @@ from keras import backend as K
 
 import numpy as np
 np.random.seed(2016)
+target = 139
 def l2_loss(y_true, y_pred):
 	return K.sqrt(K.sum(K.square(y_pred - y_true), axis = -1))    
 def load_from_file(filename):
 	import numpy as np
 	return np.load( filename + '.npy')
 def get_shuffled():	
-	coordinates = load_from_file('localization/localizer/train/shuffled_coordinates_float_256')
-	resize_img = load_from_file('localization/localizer/train/shuffled_resize_img_float_256')
+	coordinates = load_from_file('localization/localizer/train/shuffled_coordinates_float_139')
+	resize_img = load_from_file('localization/localizer/train/shuffled_resize_img_float_139')
 	Y = coordinates.reshape((-1,4))
-	X = resize_img.reshape((-1,256,256,3))
+	X = resize_img.reshape((-1,target,target,3))
 	return X,Y
 
 X,Y = get_shuffled()
-
-top_model_weights_path = 'localization/localizer/inception/localizer_bottleneck_fc_model.h5'
 # dimensions of our images.0
-img_width, img_height = 256, 256
+img_width, img_height = target, target
 nb_epoch = 50
 
 # create the base pre-trained model
@@ -73,7 +72,7 @@ validation_labels = Y[:660]
 
 
 
-ckpt = ModelCheckpoint('localization/localizer/inception/loss_inception_localizer.h5', monitor='val_loss',
+ckpt = ModelCheckpoint('localization/localizer/inception/inception_localizer.h5', monitor='val_loss',
 					verbose=0, save_best_only=True, save_weights_only=True)
 callbacks = [
 			EarlyStopping(monitor='val_loss', patience=5), ckpt
